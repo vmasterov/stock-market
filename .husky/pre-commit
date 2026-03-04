@@ -1,0 +1,36 @@
+# Определение цветов
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
+  echo "${RED}❌ Нельзя пушить напрямую в ветку ${YELLOW}$branch${NC}"
+  exit 1
+fi
+
+if echo "$branch" | grep -qE '^(feature|bugfix|hotfix|refactor|release|chore|test)/'; then
+  echo "${GREEN}✅ Имя ветки верное${NC}"
+elif echo "$branch" | grep -qE '^merge/develop[0-9]*-develop[0-9]*$'; then
+  echo "${GREEN}✅ Имя ветки ${YELLOW}merge${GREEN} верное${NC}"
+else
+  echo "${RED}❌ Неверное имя ветки${NC}"
+  echo "${RED}⚠️ Имя ветки должно начинаться с ${YELLOW}feature/${RED}, ${YELLOW}bugfix/${RED}, ${YELLOW}hotfix/${RED}, ${YELLOW}refactor/${RED}, ${YELLOW}release/${RED} или быть в формате ${YELLOW}merge/develop<число>-develop<число>${NC}"
+  exit 1
+fi
+
+echo "${YELLOW}🚀 Запуск сборки проекта...${NC}"
+if ! npm run build; then
+  echo "${RED}❌ Сборка неуспешна, коммит отклонен${NC}"
+  exit 1
+fi
+
+echo "${GREEN}✅ Сборка успешна, удаление папки dist${NC}"
+if ! rm -rf dist; then
+  echo "${RED}Не удалось удалить папку dist${NC}"
+  exit 1
+fi
+
+echo "${GREEN}🧹 Папка dist удалена, продолжение коммита${NC}"

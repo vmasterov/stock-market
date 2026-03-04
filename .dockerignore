@@ -1,0 +1,16 @@
+node_modules
+.dockerignore
+.env
+.git
+.gitignore
+.gitattributes
+.vs
+.vscode
+**/docker-compose.yml
+**/docker-compose.override.yml
+Dockerfile
+.buildArtifacts
+.idea
+**/bin
+**/obj
+**/.toolstarget
